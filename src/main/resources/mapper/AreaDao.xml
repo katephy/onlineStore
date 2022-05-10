@@ -9,4 +9,40 @@
  		FROM tb_area
  		ORDER BY priority
  	</select>
+
+	<insert id="insertArea"
+			useGeneratedKeys="true" keyProperty="areaId" keyColumn="area_id">
+		INSERT INTO
+		tb_area(area_name,priority,time_created,
+		time_updated)
+		VALUES
+		(#{areaName},#{priority},#{timeCreated},#{timeUpdated}
+	</insert>
+
+	<update id="updateArea" parameterType="com.shop.ecommerce.entity.Area">
+		update tb_area
+		<set>
+			<if test="areaName != null">area_name=#{areaName},</if>
+			<if test="areaDesc != null">area_desc=#{areaDesc},</if>
+			<if test="priority != null">priority=#{priority},</if>
+			<if test="timeUpdated != null">time_updated=#{timeUpdated}</if>
+		</set>
+		where area_id=#{areaId}
+	</update>
+	<delete id="deleteArea">
+		DELETE FROM
+		tb_area
+		WHERE
+		area_id =
+		#{areaId}
+	</delete>
+	<delete id="batchDeleteArea" parameterType="long">
+		DELETE FROM
+		tb_area
+		WHERE area_id IN
+		<foreach collection="list" item="areaId" open="(" separator=","
+				 close=")">
+			#{areaId}
+		</foreach>
+	</delete>
  </mapper>
