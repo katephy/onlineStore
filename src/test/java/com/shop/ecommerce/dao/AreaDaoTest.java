@@ -20,7 +20,7 @@ public class AreaDaoTest {
 
     @Test
     public void testQueryArea(){
-        List<Area> areaList = areaDao.queryArea();
+        List<Area> areaList = areaDao.queryAreaList();
         Assert.assertEquals(1, areaList.size());
     }
 

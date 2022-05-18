@@ -1,12 +1,13 @@
 package com.shop.ecommerce.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shop.ecommerce.dto.AreaExecution;
 import com.shop.ecommerce.entity.Area;
+import com.shop.ecommerce.enums.AreaState;
 import com.shop.ecommerce.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,4 +43,82 @@ public class AreaController {
         }
         return modelMap;
     }
+
+    @RequestMapping(value = "/addarea", method = RequestMethod.POST)
+    @ResponseBody
+    private Map<String, Object> addArea(@RequestBody Area area) {
+        Map<String, Object> modelMap = new HashMap<String, Object>();
+        if (area != null && area.getAreaName() != null) {
+            try {
+                AreaExecution ae = areaService.addArea(area);
+                if (ae.getState() == AreaState.SUCCESS.getState()) {
+                    modelMap.put("success", true);
+                } else {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", ae.getStateInfo());
+                }
+            } catch (RuntimeException e) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", e.toString());
+                return modelMap;
+            }
+
+        } else {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "Please enter the area info");
+        }
+        return modelMap;
+    }
+
+
+    @RequestMapping(value = "/modifyarea", method = RequestMethod.POST)
+    @ResponseBody
+    private Map<String, Object> modifyArea(@RequestBody Area area) {
+        Map<String, Object> modelMap = new HashMap<String, Object>();
+        if (area != null && area.getAreaId() != null) {
+            try {
+                AreaExecution ae = areaService.modifyArea(area);
+                if (ae.getState() == AreaState.SUCCESS.getState()) {
+                    modelMap.put("success", true);
+                } else {
+                    modelMap.put("success", false);
+                    modelMap.put("errMsg", ae.getStateInfo());
+                }
+            } catch (RuntimeException e) {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", e.toString());
+                return modelMap;
+            }
+
+        } else {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", "no area info was found in Database");
+        }
+        return modelMap;
+    }
+
+    @RequestMapping(value = "/delete/area/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    private Map<String, Object> modifyArea(@PathVariable Long id) {
+        Map<String, Object> modelMap = new HashMap<String, Object>();
+        try {
+            AreaExecution ae = areaService.removeArea(id);
+            if (ae.getState() == AreaState.SUCCESS.getState()) {
+                modelMap.put("success", true);
+            } else {
+                modelMap.put("success", false);
+                modelMap.put("errMsg", ae.getStateInfo());
+            }
+        } catch (RuntimeException e) {
+            modelMap.put("success", false);
+            modelMap.put("errMsg", e.toString());
+            return modelMap;
+        }
+
+        return modelMap;
+    }
+
+
+
+
 }

@@ -35,6 +35,7 @@
 			<result column="product_id" property="productId" />
 		</collection>
 	</resultMap>
+
 	<select id="queryProductList" resultType="com.shop.ecommerce.entity.Product">
 		SELECT
 		product_id,
