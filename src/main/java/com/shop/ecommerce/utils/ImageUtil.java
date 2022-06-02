@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.Random;
 
 public class ImageUtil {
-    private static String basePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
+    private static String basePath = "/Users/kate/Desktop/Projects/onlinestore/src/main/webapp/resources";
     private static final SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
     private static final Random r = new Random();
 

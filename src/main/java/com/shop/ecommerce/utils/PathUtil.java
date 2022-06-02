@@ -9,7 +9,7 @@ public class PathUtil {
         if (os.toLowerCase().startsWith("win")) {
             basePath = "C:/project/ztgg-image";
         } else {
-            basePath = "/Users/kate/Desktop/ecommerce-image";
+            basePath = "/Users/kate/Desktop/imgs";
         }
         basePath = basePath.replace("/", seperator);
         return basePath;

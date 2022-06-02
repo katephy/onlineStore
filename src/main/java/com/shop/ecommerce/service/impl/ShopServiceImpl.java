@@ -74,6 +74,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Shop getByShopId(long shopId) {
+
         return shopDao.queryByShopId(shopId);
     }
 
