@@ -2,7 +2,7 @@ package com.shop.ecommerce.service.impl;
 
 import com.shop.ecommerce.dao.ShopDao;
 import com.shop.ecommerce.dto.ImageHolder;
-import com.shop.ecommerce.dto.ShopDto;
+import com.shop.ecommerce.dto.ShopExecution;
 import com.shop.ecommerce.entity.Shop;
 import com.shop.ecommerce.service.ShopService;
 import com.shop.ecommerce.utils.ImageUtil;
@@ -28,10 +28,10 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
-    public ShopDto addShop(Shop shop, ImageHolder thumbnail) {
+    public ShopExecution addShop(Shop shop, ImageHolder thumbnail) {
         // empty shop input
         if (shop == null) {
-            return new ShopDto(ShopState.NULL_SHOP);
+            return new ShopExecution(ShopState.NULL_SHOP);
         }
 
         try {
@@ -63,7 +63,7 @@ public class ShopServiceImpl implements ShopService {
         } catch (Exception e) {
             throw new ShopOperationException("addShop error:" + e.getMessage());
         }
-        return new ShopDto(ShopState.CHECK, shop);
+        return new ShopExecution(ShopState.CHECK, shop);
     }
 
     private void addShopImg(Shop shop, ImageHolder thumbnail) {
@@ -80,9 +80,9 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
-    public ShopDto modifyShop(Shop shop, ImageHolder imageHolder) throws ShopOperationException {
+    public ShopExecution modifyShop(Shop shop, ImageHolder imageHolder) throws ShopOperationException {
         if (shop == null || shop.getShopId() == null) {
-            return new ShopDto(ShopState.NULL_SHOP);
+            return new ShopExecution(ShopState.NULL_SHOP);
         } else {
 
             try {
@@ -99,10 +99,10 @@ public class ShopServiceImpl implements ShopService {
                 shop.setTimeUpdated(new Date());
                 int effectedNum = shopDao.updateShop(shop);
                 if (effectedNum <= 0) {
-                    return new ShopDto(ShopState.INNER_ERROR);
+                    return new ShopExecution(ShopState.INNER_ERROR);
                 } else {
                     shop = shopDao.queryByShopId(shop.getShopId());
-                    return new ShopDto(ShopState.SUCCESS, shop);
+                    return new ShopExecution(ShopState.SUCCESS, shop);
                 }
             } catch (Exception e) {
                 throw new ShopOperationException("modifyShop error:" + e.getMessage());
@@ -111,11 +111,11 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
-    public ShopDto getShopList(Shop shopCondition, int pageIndex, int pageSize) {
+    public ShopExecution getShopList(Shop shopCondition, int pageIndex, int pageSize) {
         int rowIndex = PageCalculator.calculateRowIndex(pageIndex, pageSize);
         List<Shop> shopList = shopDao.queryShopList(shopCondition, rowIndex, pageSize);
         int count = shopDao.queryShopCount(shopCondition);
-        ShopDto se = new ShopDto();
+        ShopExecution se = new ShopExecution();
         if (shopList != null) {
             se.setShopList(shopList);
             se.setCount(count);

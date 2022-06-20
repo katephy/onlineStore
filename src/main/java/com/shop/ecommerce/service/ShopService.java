@@ -1,7 +1,7 @@
 package com.shop.ecommerce.service;
 
 import com.shop.ecommerce.dto.ImageHolder;
-import com.shop.ecommerce.dto.ShopDto;
+import com.shop.ecommerce.dto.ShopExecution;
 import com.shop.ecommerce.entity.Shop;
 import com.shop.ecommerce.exceptions.ShopOperationException;
 
@@ -14,7 +14,7 @@ public interface ShopService {
      * @param imageHolder
      * @return
      */
-    ShopDto addShop(Shop shop, ImageHolder imageHolder) throws ShopOperationException;
+    ShopExecution addShop(Shop shop, ImageHolder imageHolder) throws ShopOperationException;
 
     /**
      * get shop by ID
@@ -32,7 +32,7 @@ public interface ShopService {
      * @return
      * @throws ShopOperationException
      */
-    ShopDto modifyShop(Shop shop, ImageHolder imageHolder) throws ShopOperationException;
+    ShopExecution modifyShop(Shop shop, ImageHolder imageHolder) throws ShopOperationException;
 
     /**
      * return pagintaed shop list based on filters
@@ -42,5 +42,5 @@ public interface ShopService {
      * @param pageSize
      * @return
      */
-    ShopDto getShopList(Shop shopCondition, int pageIndex, int pageSize);
+    ShopExecution getShopList(Shop shopCondition, int pageIndex, int pageSize);
 }

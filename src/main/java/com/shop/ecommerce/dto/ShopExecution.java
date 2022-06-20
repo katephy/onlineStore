@@ -7,7 +7,7 @@ import com.shop.ecommerce.enums.ShopState;
 import java.util.List;
 
 
-public class ShopDto {
+public class ShopExecution {
 
     private int state;
     private String stateInfo;
@@ -15,24 +15,24 @@ public class ShopDto {
     private Shop shop;
     private List<Shop> shopList;
 
-    public ShopDto() {
+    public ShopExecution() {
     }
 
     //shop CRUD operations failed
-    public ShopDto(ShopState stateEnum) {
+    public ShopExecution(ShopState stateEnum) {
         this.state = stateEnum.getState();
         this.stateInfo = stateEnum.getStateInfo();
     }
 
     // shop CRUD operations success for single shop
-    public ShopDto(ShopState stateEnum, Shop shop) {
+    public ShopExecution(ShopState stateEnum, Shop shop) {
         this.state = stateEnum.getState();
         this.stateInfo = stateEnum.getStateInfo();
         this.shop = shop;
     }
 
     // shop CRUD operations success for list of shop
-    public ShopDto(ShopState stateEnum, List<Shop> shopList) {
+    public ShopExecution(ShopState stateEnum, List<Shop> shopList) {
         this.state = stateEnum.getState();
         this.stateInfo = stateEnum.getStateInfo();
         this.shopList = shopList;

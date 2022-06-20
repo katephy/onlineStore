@@ -15,5 +15,5 @@ public class ShopCategory {
     private Integer priority;
     private Date timeCreated;
     private Date timeUpdated;
-    private ShopCategory parent;
+    private Long parentId;
 }

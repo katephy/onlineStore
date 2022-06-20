@@ -2,7 +2,7 @@ package com.shop.ecommerce.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.ecommerce.dto.ImageHolder;
-import com.shop.ecommerce.dto.ShopDto;
+import com.shop.ecommerce.dto.ShopExecution;
 import com.shop.ecommerce.entity.Area;
 import com.shop.ecommerce.entity.Shop;
 import com.shop.ecommerce.entity.ShopCategory;
@@ -13,19 +13,13 @@ import com.shop.ecommerce.service.AreaService;
 import com.shop.ecommerce.service.ShopCategoryService;
 import com.shop.ecommerce.service.ShopService;
 
-import com.shop.ecommerce.utils.HttpServletRequestUtil;
+import com.shop.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +37,9 @@ public class ShopController {
 
     @Autowired
     private AreaService areaService;
+
+    @Autowired
+    private UserService userService;
 
 
     @RequestMapping(value = "/getshopinitinfo", method = RequestMethod.GET)
@@ -79,17 +76,16 @@ public class ShopController {
             return modelMap;
         }
 
-
         // register shop
         if (shop != null && shopImg != null) {
             try {
                 ImageHolder imageHolder = new ImageHolder(shopImg.getOriginalFilename(),shopImg.getInputStream());
-                ShopDto shopDto = shopService.addShop(shop,imageHolder);
-                if (shopDto.getState() == ShopState.CHECK.getState()) {
+                ShopExecution shopExecution = shopService.addShop(shop,imageHolder);
+                if (shopExecution.getState() == ShopState.CHECK.getState()) {
                     modelMap.put("success", true);
                 } else {
                     modelMap.put("success", false);
-                    modelMap.put("errMsg", shopDto.getStateInfo());
+                    modelMap.put("errMsg", shopExecution.getStateInfo());
                 }
             } catch (ShopOperationException e) {
                 modelMap.put("success", false);
@@ -130,10 +126,9 @@ public class ShopController {
 
     @RequestMapping(value = "/modifyshop", method = RequestMethod.POST)
     @ResponseBody
-    private Map<String, Object> modifyShop(HttpServletRequest request) {
+    private Map<String, Object> modifyShop(@RequestParam(value = "shop") String shopStr, @RequestParam(value = "shopImg") MultipartFile shopImg) {
         Map<String, Object> modelMap = new HashMap<String, Object>();
-        // 1.get and transform all input data
-        String shopStr = HttpServletRequestUtil.getString(request, "shopStr");
+        // map shopStr to shop
         ObjectMapper mapper = new ObjectMapper();
         Shop shop = null;
         try {
@@ -143,31 +138,23 @@ public class ShopController {
             modelMap.put("errMsg", e.getMessage());
             return modelMap;
         }
-        CommonsMultipartFile shopImg = null;
-        CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver(
-                request.getSession().getServletContext());
-        if (commonsMultipartResolver.isMultipart(request)) {
-            MultipartHttpServletRequest multipartHttpServletRequest = (MultipartHttpServletRequest) request;
-            shopImg = (CommonsMultipartFile) multipartHttpServletRequest.getFile("shopImg");
-        }
+
+
         // 2.modify shop info
         if (shop != null && shop.getShopId() != null) {
-            ShopDto shopDto;
-            User owner = new User();
-            owner.setUserId(1L);
-            shop.setOwner(owner);
+            ShopExecution shopExecution;
             try {
                 if (shopImg == null) {
-                    shopDto = shopService.modifyShop(shop, null);
+                    shopExecution = shopService.modifyShop(shop, null);
                 } else {
                     ImageHolder imageHolder = new ImageHolder(shopImg.getOriginalFilename(),shopImg.getInputStream());
-                    shopDto = shopService.modifyShop(shop, imageHolder);
+                    shopExecution = shopService.modifyShop(shop, imageHolder);
                 }
-                if (shopDto.getState() == ShopState.SUCCESS.getState()) {
+                if (shopExecution.getState() == ShopState.SUCCESS.getState()) {
                     modelMap.put("success", true);
                 } else {
                     modelMap.put("success", false);
-                    modelMap.put("errMsg", shopDto.getStateInfo());
+                    modelMap.put("errMsg", shopExecution.getStateInfo());
                 }
             } catch (ShopOperationException e) {
                 modelMap.put("success", false);
@@ -184,24 +171,17 @@ public class ShopController {
         }
     }
 
-    @RequestMapping(value = "/getshoplist", method = RequestMethod.GET)
+    @RequestMapping(value = "/getshoplist/{userId}", method = RequestMethod.GET)
     @ResponseBody
-    private Map<String, Object> getShopList(HttpServletRequest request) {
+    private Map<String, Object> getShopList(@PathVariable Long userId) {
         Map<String, Object> modelMap = new HashMap<String, Object>();
-        // TODO: remve these 3 line when login/session code is complete
-        User owner = new User();
-        owner.setUserId(1L);
-        request.getSession().setAttribute("user", owner);
-        //get owner from session
-        owner = (User) request.getSession().getAttribute("user");
         try {
+            User user = userService.getUserById(userId);
             Shop shopCondition = new Shop();
-            shopCondition.setOwner(owner);
-            ShopDto shopDto = shopService.getShopList(shopCondition, 0, 100);
-            modelMap.put("shopList", shopDto.getShopList());
-            // put shoplist into session so that it will be accessible by this user in the session
-            request.getSession().setAttribute("shopList", shopDto.getShopList());
-            modelMap.put("user", owner);
+            shopCondition.setOwner(user);
+            ShopExecution shopExecution = shopService.getShopList(shopCondition, 0, 100);
+            modelMap.put("shopList", shopExecution.getShopList());
+            modelMap.put("user", user);
             modelMap.put("success", true);
         } catch (Exception e) {
             modelMap.put("success", false);

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.ecommerce.dao.UserDao">
+    <select id="queryUserList" resultType="com.shop.ecommerce.entity.User">
+        select user_id,
+        name,
+        profile_img,
+        email,
+        gender,
+        enable_status,
+        user_type,
+        time_created,
+        time_updated
+        from
+        tb_user
+        <where>
+            <if test="userCondition != null and userCondition.name != null">
+                and name like '%${userCondition.name}%'
+            </if>
+            <if test="userCondition != null and userCondition.enableStatus != null">
+                and enable_status = #{userCondition.enableStatus}
+            </if>
+        </where>
+        order by
+        time_created desc
+        limit #{rowIndex},#{pageSize};
+    </select>
+    <select id="queryUserCount" resultType="int">
+        SELECT
+        count(1)
+        FROM
+        tb_user
+        <where>
+            <if test="userCondition != null and userCondition.name!=null">
+                and name like '%${userCondition.name}%'
+            </if>
+            <if test="userCondition != null and userCondition.enableStatus!=null">
+                and enable_status = #{userCondition.enableStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryUserById" resultType="com.shop.ecommerce.entity.User"
+            parameterType="Long">
+        select user_id,
+        name,
+        profile_img,
+        email,
+        gender,
+        enable_status,
+        user_type,
+        time_created,
+        time_updated
+		FROM
+		tb_user
+		WHERE
+		user_id = #{userId}
+	</select>
+    <insert id="insertUser" parameterType="com.shop.ecommerce.entity.User"
+            useGeneratedKeys="true" keyProperty="userId" keyColumn="user_id">
+		INSERT
+		INTO
+		tb_user(name,gender,email,profile_img,user_type,
+		time_created,time_updated,enable_status)
+		VALUES
+		(#{name},#{gender},#{email},#{profileImg},
+		#{userType},#{timeCreated},#{timeUpdated},#{enableStatus})
+	</insert>
+    <update id="updateUser" parameterType="com.shop.ecommerce.entity.User">
+        update tb_user
+        <set>
+            <if test="name != null">name=#{name},</if>
+            <if test="gender != null">gender=#{gender},</if>
+            <if test="email != null">email=#{email},</if>
+            <if test="profileImg != null">profile_img=#{profileImg},</if>
+            <if test="userType != null">user_type=#{userType},</if>
+            <if test="timeUpdated != null">time_updated=#{timeUpdated},</if>
+            <if test="enableStatus != null">enable_status=#{enableStatus}</if>
+        </set>
+        where user_id=#{userId}
+    </update>
+
+
+
+</mapper>

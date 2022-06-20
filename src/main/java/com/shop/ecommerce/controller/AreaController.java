@@ -1,6 +1,5 @@
 package com.shop.ecommerce.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.ecommerce.dto.AreaExecution;
 import com.shop.ecommerce.entity.Area;
 import com.shop.ecommerce.enums.AreaState;
